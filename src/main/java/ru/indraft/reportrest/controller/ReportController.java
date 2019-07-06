@@ -1,7 +1,5 @@
 package ru.indraft.reportrest.controller;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ContentDisposition;
@@ -17,10 +15,7 @@ import ru.indraft.reportrest.model.TaskModel;
 import ru.indraft.reportrest.service.TaskService;
 import ru.indraft.reportrest.service.labor.LaborReportService;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -28,10 +23,10 @@ import java.util.List;
 public class ReportController {
 
     @Autowired
-    LaborReportService laborReportService;
+    private LaborReportService laborReportService;
 
     @Autowired
-    TaskService taskService;
+    private TaskService taskService;
 
     @RequestMapping("/")
     public String index() {
@@ -43,12 +38,8 @@ public class ReportController {
         if (file == null) {
             return ResponseEntity.badRequest().body("No file loaded");
         }
-        InputStream inputStream = file.getInputStream();
-        HSSFWorkbook workbook = new HSSFWorkbook(inputStream);
-        List<TaskModel> taskModels = taskService.getTaskModels(workbook);
-        XSSFWorkbook resultWorkBook = laborReportService.generate(taskModels);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        resultWorkBook.write(out);
+        List<TaskModel> taskModels = taskService.getTaskModels(file);
+        var report = laborReportService.generateReport(taskModels);
         HttpHeaders httpHeaders = new HttpHeaders();
         String filename = "Трудозатраты.xls";
         ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
@@ -56,8 +47,7 @@ public class ReportController {
                 .build();
         httpHeaders.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
         httpHeaders.setContentDisposition(contentDisposition);
-        var bin = new ByteArrayInputStream(out.toByteArray());
-        return ResponseEntity.ok().headers(httpHeaders).body(new InputStreamResource(bin));
+        return ResponseEntity.ok().headers(httpHeaders).body(new InputStreamResource(report));
     }
 
 }

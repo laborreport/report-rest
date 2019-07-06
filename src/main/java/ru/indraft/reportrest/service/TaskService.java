@@ -5,8 +5,10 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ru.indraft.reportrest.model.TaskModel;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -28,9 +30,16 @@ public class TaskService {
     }
 
     @Autowired
-    HolidayService holidayService;
+    private HolidayService holidayService;
 
-    public ArrayList<TaskModel> getTaskModels(HSSFWorkbook workbook) {
+
+    public ArrayList<TaskModel> getTaskModels(MultipartFile file) throws IOException {
+        var inputStream = file.getInputStream();
+        var workbook = new HSSFWorkbook(inputStream);
+        return getTaskModels(workbook);
+    }
+
+    private ArrayList<TaskModel> getTaskModels(HSSFWorkbook workbook) {
         HSSFSheet sheet = workbook.getSheetAt(SHEET_INDEX);
         return getTaskModels(sheet);
     }
