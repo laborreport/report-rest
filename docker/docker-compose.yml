@@ -1,0 +1,26 @@
+version: '3.4'
+x-logging: &logging
+  logging:
+    options:
+      max-size: "1m"
+
+x-common: &common
+  restart: always
+  networks:
+    - infra
+  <<: *logging
+
+services:
+  laborreport:
+    build:
+      context: ./../
+      dockerfile: docker/Dockerfile
+    image: report-rest
+    container_name: laborreport
+    ports:
+      - '8090:8090'
+    <<: *common
+
+networks:
+  infra:
+    driver: bridge
