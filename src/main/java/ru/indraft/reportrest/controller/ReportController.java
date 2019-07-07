@@ -11,12 +11,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import ru.indraft.reportrest.model.DescriptionModel;
 import ru.indraft.reportrest.model.TaskModel;
+import ru.indraft.reportrest.service.LocaleService;
 import ru.indraft.reportrest.service.TaskService;
 import ru.indraft.reportrest.service.labor.LaborReportService;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -28,20 +32,37 @@ public class ReportController {
     @Autowired
     private TaskService taskService;
 
+    private LocaleService lres = LocaleService.getInstance();
+
     @RequestMapping("/")
     public String index() {
         return "Server is work!";
     }
 
+    private static final String FILE_NAME_DELIMITER = "_";
+    private static final String LABOR_FILENAME_START = "labor.report.filename.start";
+
+    private String getLaborFileName(MultipartFile file) throws IOException {
+       DescriptionModel description = taskService.getDescription(file);
+       String result = lres.get(LABOR_FILENAME_START);
+       result += FILE_NAME_DELIMITER;
+       result += description.getSurname();
+       result += FILE_NAME_DELIMITER;
+       LocalDate reportDate =  description.getReportDate();
+       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM_yyyy");
+       result += reportDate.format(formatter);
+       return result;
+    }
+
     @PostMapping("/labor-report")
-    public ResponseEntity createReport(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity createLaborReport(@RequestParam("file") MultipartFile file) throws IOException {
         if (file == null) {
             return ResponseEntity.badRequest().body("No file loaded");
         }
         List<TaskModel> taskModels = taskService.getTaskModels(file);
         var report = laborReportService.generateReport(taskModels);
         HttpHeaders httpHeaders = new HttpHeaders();
-        String filename = "Трудозатраты.xls";
+        String filename = getLaborFileName(file);
         ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
                 .filename(filename, StandardCharsets.UTF_8)
                 .build();
