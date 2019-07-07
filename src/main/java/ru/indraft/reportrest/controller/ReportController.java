@@ -18,6 +18,7 @@ import ru.indraft.reportrest.service.TaskService;
 import ru.indraft.reportrest.service.labor.LaborReportService;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -43,15 +44,16 @@ public class ReportController {
     private static final String LABOR_FILENAME_START = "labor.report.filename.start";
 
     private String getLaborFileName(MultipartFile file) throws IOException {
-       DescriptionModel description = taskService.getDescription(file);
-       String result = lres.get(LABOR_FILENAME_START);
-       result += FILE_NAME_DELIMITER;
-       result += description.getSurname();
-       result += FILE_NAME_DELIMITER;
-       LocalDate reportDate =  description.getReportDate();
-       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM_yyyy");
-       result += reportDate.format(formatter);
-       return result;
+        DescriptionModel description = taskService.getDescription(file);
+        String result = lres.get(LABOR_FILENAME_START);
+        result += FILE_NAME_DELIMITER;
+        result += description.getSurname();
+        result += FILE_NAME_DELIMITER;
+        LocalDate reportDate = description.getReportDate();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM_yyyy");
+        result += reportDate.format(formatter);
+        result += ".xlsx";
+        return result;
     }
 
     @PostMapping("/labor-report")
@@ -64,9 +66,9 @@ public class ReportController {
         HttpHeaders httpHeaders = new HttpHeaders();
         String filename = getLaborFileName(file);
         ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
-                .filename(filename, StandardCharsets.UTF_8)
-                .build();
-        httpHeaders.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+                .filename(URLEncoder.encode(filename, StandardCharsets.UTF_8.toString())).build();
+        httpHeaders.setContentType(
+                MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
         httpHeaders.setContentDisposition(contentDisposition);
         return ResponseEntity.ok().headers(httpHeaders).body(new InputStreamResource(report));
     }
