@@ -5,8 +5,12 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import ru.indraft.reportrest.model.DescriptionModel;
 import ru.indraft.reportrest.model.TaskModel;
+import ru.indraft.reportrest.util.StringUtils;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -24,15 +28,39 @@ public class TaskService {
         private static final int TASK_NAME = 1;
         private static final int TASK_WORK_TIME = 2;
         private static final int TASK_DATE = 3;
+        private static final int SURNAME = 5;
         private static final int TASK_PROJECT = 12;
     }
 
     @Autowired
-    HolidayService holidayService;
+    private HolidayService holidayService;
 
-    public ArrayList<TaskModel> getTaskModels(HSSFWorkbook workbook) {
+
+    public ArrayList<TaskModel> getTaskModels(MultipartFile file) throws IOException {
+        var inputStream = file.getInputStream();
+        var workbook = new HSSFWorkbook(inputStream);
+        return getTaskModels(workbook);
+    }
+
+    public DescriptionModel getDescription(MultipartFile file) throws IOException {
+        var inputStream = file.getInputStream();
+        var workbook = new HSSFWorkbook(inputStream);
+        return getDescription(workbook);
+    }
+
+    private ArrayList<TaskModel> getTaskModels(HSSFWorkbook workbook) {
         HSSFSheet sheet = workbook.getSheetAt(SHEET_INDEX);
         return getTaskModels(sheet);
+    }
+
+    private DescriptionModel getDescription(HSSFWorkbook workbook) {
+        HSSFSheet sheet = workbook.getSheetAt(SHEET_INDEX);
+        var descriptionModel = new DescriptionModel();
+        var firstRow = sheet.getRow(START_ROW_INDEX);
+        var fullName = firstRow.getCell(CellNum.SURNAME).getStringCellValue();
+        descriptionModel.setSurname(StringUtils.getSurname(fullName));
+        descriptionModel.setReportDate(getLocalDate(firstRow.getCell(CellNum.TASK_DATE).getDateCellValue()));
+        return descriptionModel;
     }
 
     private ArrayList<TaskModel> getTaskModels(HSSFSheet sheet) {

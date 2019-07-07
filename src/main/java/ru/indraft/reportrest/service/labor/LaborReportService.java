@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import ru.indraft.reportrest.model.TaskModel;
 import ru.indraft.reportrest.service.LocaleService;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -64,7 +67,21 @@ public class LaborReportService {
     private CellStyleService cellStyleService;
     private XSSFWorkbook workbook;
 
-    public XSSFWorkbook generate(List<TaskModel> taskModels) {
+    public ByteArrayInputStream generateReport(List<TaskModel> taskModels) throws IOException {
+        XSSFWorkbook resultWorkbook = null;
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            resultWorkbook  = generate(taskModels);
+            resultWorkbook.write(out);
+            return new ByteArrayInputStream(out.toByteArray());
+        } finally {
+            if (resultWorkbook != null) {
+                resultWorkbook.close();
+            }
+        }
+    }
+
+    private XSSFWorkbook generate(List<TaskModel> taskModels) {
         workbook = new XSSFWorkbook();
         cellStyleService = new CellStyleService(workbook);
 
