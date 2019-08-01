@@ -101,7 +101,7 @@ public class ReportController {
 
     // TODO: убрать дублирование создания Headers
 
-    @PostMapping("/act-report-pdf")
+    @PostMapping("/act-report/pdf")
     public ResponseEntity createActReport(@RequestParam("file") MultipartFile file, @RequestParam("user") UserModel user, @RequestParam("act_number") String actNumber) throws IOException, JRException {
         if (file == null) {
             return ResponseEntity.badRequest().body("No file loaded");
