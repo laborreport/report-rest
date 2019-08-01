@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.indraft.reportrest.model.DescriptionModel;
+import ru.indraft.reportrest.model.ReportTaskModel;
 import ru.indraft.reportrest.model.TaskModel;
 import ru.indraft.reportrest.util.StringUtils;
+import ru.indraft.reportrest.util.TaskUtils;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -16,6 +18,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class TaskService {
@@ -57,8 +60,11 @@ public class TaskService {
         HSSFSheet sheet = workbook.getSheetAt(SHEET_INDEX);
         var descriptionModel = new DescriptionModel();
         var firstRow = sheet.getRow(START_ROW_INDEX);
-        var fullName = firstRow.getCell(CellNum.SURNAME).getStringCellValue();
-        descriptionModel.setSurname(StringUtils.getSurname(fullName));
+        var jiraUserName = firstRow.getCell(CellNum.SURNAME).getStringCellValue();
+        descriptionModel.setSurname(StringUtils.getSurname(jiraUserName));
+        descriptionModel.setFullName(StringUtils.getFullName(jiraUserName));
+        descriptionModel.setShortFullName(StringUtils.getShortFullName(jiraUserName));
+        descriptionModel.setGenetiveFullName(StringUtils.getGenetiveFullName(jiraUserName));
         descriptionModel.setReportDate(getLocalDate(firstRow.getCell(CellNum.TASK_DATE).getDateCellValue()));
         return descriptionModel;
     }
@@ -115,6 +121,39 @@ public class TaskService {
 
     private LocalDate getLocalDate(Date dateCellValue) {
         return LocalDate.ofInstant(dateCellValue.toInstant(), ZoneId.systemDefault());
+    }
+
+    public List<ReportTaskModel> convert(List<TaskModel> taskModels, Double rate) {
+        List<ReportTaskModel> reportTasks = new ArrayList<>();
+        for (int i = 0; i < taskModels.size(); i ++) {
+            reportTasks.add(convert(taskModels.get(i), rate, i));
+        }
+        return reportTasks;
+    }
+
+    private static final double URGENCY_RATIO = 1.5;
+
+    private Double getTaskCost(TaskModel taskModel, Double rate) {
+        double sum = 0;
+        if (taskModel.getWorkTime() != null) {
+            sum += (taskModel.getWorkTime() * rate);
+        }
+        if (taskModel.getOverTime() != null) {
+            sum += (taskModel.getOverTime() * URGENCY_RATIO * rate);
+        }
+        return sum;
+    }
+
+    private ReportTaskModel convert(TaskModel taskModel, Double rate, int i) {
+        ReportTaskModel reportTask = new ReportTaskModel();
+        reportTask.setTaskNumber(i);
+        reportTask.setTaskName(taskModel.getId() + " " + taskModel.getName());
+        reportTask.setTermTask(TaskUtils.getTerm(taskModel));
+        reportTask.setTaskWorkTime(StringUtils.format(taskModel.getWorkTime() != null ? taskModel.getWorkTime() : 0));
+        reportTask.setTaskOverTime(StringUtils.format(taskModel.getOverTime() != null ? taskModel.getOverTime() : 0));
+        reportTask.setTaskRate(StringUtils.format(rate));
+        reportTask.setTaskCost(StringUtils.format(getTaskCost(taskModel, rate)));
+        return reportTask;
     }
 
 }
