@@ -1,6 +1,12 @@
 package ru.indraft.reportrest.service.act;
 
-import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
@@ -8,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import ru.indraft.reportrest.manager.ExtJasperExportManager;
 import ru.indraft.reportrest.model.DescriptionModel;
 import ru.indraft.reportrest.model.ReportTaskModel;
 import ru.indraft.reportrest.model.TaskModel;
@@ -29,9 +36,11 @@ import java.util.Map;
 public class ActReportService {
 
     private static final String JASPER_TEMPLATE_PATH = "/template/akt.jrxml";
-
+    private static final double URGENCY_RATIO = 1.5;
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private ExtJasperExportManager extJasperExportManager;
 
     private JasperReport getJasperReport() throws IOException, JRException {
         Resource resource = new ClassPathResource(JASPER_TEMPLATE_PATH);
@@ -61,11 +70,9 @@ public class ActReportService {
         return parameters;
     }
 
-    private static final double URGENCY_RATIO = 1.5;
-
     private Double getReportTotalCost(List<TaskModel> taskModels, Double rate) {
         double sum = 0;
-        for(TaskModel taskModel : taskModels) {
+        for (TaskModel taskModel : taskModels) {
             if (taskModel.getWorkTime() != null) {
                 sum += (taskModel.getWorkTime() * rate);
             }
@@ -76,7 +83,13 @@ public class ActReportService {
         return sum;
     }
 
-    public ByteArrayInputStream generateReport(List<TaskModel> taskModels, UserModel userModel, DescriptionModel descriptionModel, String actNumber) throws IOException, JRException {
+    public ByteArrayInputStream generateReport(
+            List<TaskModel> taskModels,
+            UserModel userModel,
+            DescriptionModel descriptionModel,
+            String actNumber,
+            ExportReportType exportReportType
+    ) throws IOException, JRException {
         JasperReport jasperReport = getJasperReport();
 
         double totalCost = getReportTotalCost(taskModels, userModel.getRate());
@@ -88,12 +101,23 @@ public class ActReportService {
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, itemsJRBean);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
 
-        // line bellow is only for demo purpose.
-//        JasperExportManager.exportReportToPdfStream(jasperPrint,
-//                new FileOutputStream("src/main/resources/report.pdf")
-//        );
+        switch (exportReportType) {
+            case PDF:
+                JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+                break;
+            case DOCX:
+                extJasperExportManager.exportToDocxStream(jasperPrint, outputStream);
+                break;
+            case ODT:
+                extJasperExportManager.exportToOdtStream(jasperPrint, outputStream);
+                break;
+        }
+
+//      line bellow is only for demo purpose.
+//      JasperExportManager.exportReportToPdfStream(jasperPrint,
+//           new FileOutputStream("src/main/resources/report.pdf")
+//      );
         return new ByteArrayInputStream(outputStream.toByteArray());
     }
 

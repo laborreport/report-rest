@@ -1,5 +1,8 @@
 package ru.indraft.reportrest.service.act;
 
+import org.springframework.context.annotation.Description;
+
+@Description(value = "Jasper Report Params Constants.")
 public final class ReportParams {
 
     /**
@@ -56,4 +59,10 @@ public final class ReportParams {
      * Итоговая стоимость услуг прописью
      */
     public static final String TOTAL_COST_IN_WORDS = "TOTAL_COST_IN_WORDS";
+
+    /**
+     * Private constructor - can not be instantiated.
+     */
+    private ReportParams() {
+    }
 }

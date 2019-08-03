@@ -23,6 +23,11 @@ public class DateUtils {
         return formatter.format(date);
     }
 
+    public static String getDateStrForFileName(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM_yyyy");
+        return formatter.format(date);
+    }
+
     public static String formatDate(LocalDate date) {
         return date.format(DEFAULT_DATE_TIME_FORMATTER);
     }
