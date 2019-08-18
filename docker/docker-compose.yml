@@ -19,6 +19,8 @@ services:
     container_name: laborreport
     ports:
       - '8090:8090'
+    # debug port uncommented.
+    #  - '5005:5005'
     <<: *common
 
 networks:
