@@ -4,6 +4,7 @@ import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFDataFormat;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class CellStyleService {
@@ -69,21 +70,25 @@ public class CellStyleService {
     }
 
     private XSSFCellStyle workTimeCellStyle;
+    private XSSFCellStyle workTimeCellNumberStyle;
 
     public XSSFCellStyle getWorkTimeCellStyle() {
         if (workTimeCellStyle == null) {
-            workTimeCellStyle = createTaskRowCellStyle(HorizontalAlignment.RIGHT, VerticalAlignment.CENTER);
+            workTimeCellStyle = createTaskRowCellStyle(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
+            workTimeCellStyle.setDataFormat((short) 1);
         }
         return workTimeCellStyle;
     }
 
-    private XSSFCellStyle overTimeCellStyle;
+    public XSSFCellStyle getWorkTimeCellNumberStyle() {
+        if (workTimeCellNumberStyle == null) {
+            workTimeCellNumberStyle = createTaskRowCellStyle(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
 
-    public XSSFCellStyle getOverTimeCellStyle() {
-        if (overTimeCellStyle == null) {
-            overTimeCellStyle = createTaskRowCellStyle(HorizontalAlignment.RIGHT, VerticalAlignment.CENTER);
+            XSSFDataFormat dataFormat = workbook.createDataFormat();
+            dataFormat.putFormat((short) 200, "0.??");
+            workTimeCellNumberStyle.setDataFormat((short) 200);
         }
-        return overTimeCellStyle;
+        return workTimeCellNumberStyle;
     }
 
     private void addBorder(XSSFCellStyle cellStyle) {

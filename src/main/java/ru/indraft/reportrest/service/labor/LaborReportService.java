@@ -160,12 +160,21 @@ public class LaborReportService {
         projectNameCell.setCellValue(taskModel.getProjectName());
 
         XSSFCell workTimeCell = row.createCell(ColumnNum.WORK_TIME, CellType.NUMERIC);
-        workTimeCell.setCellStyle(cellStyleService.getWorkTimeCellStyle());
-        workTimeCell.setCellValue(taskModel.getWorkTime() != null ? taskModel.getWorkTime() : 0);
+        writeTimeCell(workTimeCell, taskModel.getWorkTime());
 
         XSSFCell overTimeCell = row.createCell(ColumnNum.OVER_TIME, CellType.NUMERIC);
-        overTimeCell.setCellStyle(cellStyleService.getOverTimeCellStyle());
-        overTimeCell.setCellValue(taskModel.getOverTime() != null ? taskModel.getOverTime() : 0);
+        writeTimeCell(overTimeCell, taskModel.getOverTime());
+    }
+
+    private void writeTimeCell(XSSFCell timeCell, Double workTime) {
+        var time = workTime != null ? workTime : 0;
+        boolean noDecimalPart = time % 1 == 0;
+        timeCell.setCellValue(time);
+        if (noDecimalPart) {
+            timeCell.setCellStyle(cellStyleService.getWorkTimeCellStyle());
+        } else {
+            timeCell.setCellStyle(cellStyleService.getWorkTimeCellNumberStyle());
+        }
     }
 
     private void setColumnWidths(XSSFSheet sheet) {

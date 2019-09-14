@@ -105,6 +105,11 @@ public class TaskService {
         taskModels.put(taskId, taskModel);
     }
 
+    public static double roundDouble(double value, int places) {
+        double scale = Math.pow(10, places);
+        return Math.round(value * scale) / scale;
+    }
+
     private void setWorkTime(LocalDate taskDate, Double taskWorkTime, TaskModel taskModel) {
         if (!checkDayIsHoliday(taskDate)) {
             var currentWorkTime = taskModel.getWorkTime() == null ? 0 : taskModel.getWorkTime();
