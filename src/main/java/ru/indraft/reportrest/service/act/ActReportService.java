@@ -71,16 +71,17 @@ public class ActReportService {
     }
 
     private Double getReportTotalCost(List<TaskModel> taskModels, Double rate) {
-        double sum = 0;
+        double totalWorkTime = 0;
+        double totalOverTime = 0;
         for (TaskModel taskModel : taskModels) {
             if (taskModel.getWorkTime() != null) {
-                sum += (taskModel.getWorkTime() * rate);
+                totalWorkTime += taskModel.getWorkTime();
             }
             if (taskModel.getOverTime() != null) {
-                sum += (taskModel.getOverTime() * URGENCY_RATIO * rate);
+                totalOverTime += taskModel.getOverTime();
             }
         }
-        return sum;
+        return (Math.round(totalWorkTime) * rate) + (Math.round(totalOverTime) * URGENCY_RATIO * rate);
     }
 
     public ByteArrayInputStream generateReport(

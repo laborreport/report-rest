@@ -130,7 +130,7 @@ public class TaskService {
 
     public List<ReportTaskModel> convert(List<TaskModel> taskModels, Double rate) {
         List<ReportTaskModel> reportTasks = new ArrayList<>();
-        for (int i = 0; i < taskModels.size(); i ++) {
+        for (int i = 0; i < taskModels.size(); i++) {
             reportTasks.add(convert(taskModels.get(i), rate, i));
         }
         return reportTasks;
@@ -151,7 +151,7 @@ public class TaskService {
 
     private ReportTaskModel convert(TaskModel taskModel, Double rate, int i) {
         ReportTaskModel reportTask = new ReportTaskModel();
-        reportTask.setTaskNumber(i);
+        reportTask.setTaskNumber(i+1);
         reportTask.setTaskName(taskModel.getId() + " " + taskModel.getName());
         reportTask.setTermTask(TaskUtils.getTerm(taskModel));
         reportTask.setTaskWorkTime(StringUtils.format(taskModel.getWorkTime() != null ? taskModel.getWorkTime() : 0));

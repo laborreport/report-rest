@@ -13,7 +13,7 @@ public class StringUtils {
 
     private final static String SPACE_REGEX = "\\s+";
     private final static String EMPTY_STRING = "";
-    private final static DecimalFormat doubleFormat = new DecimalFormat("0.#####");
+    private final static DecimalFormat doubleFormat = new DecimalFormat("0.##");
 
     public static String getSurname(String jiraName) {
         return Stream.of(jiraName.split(SPACE_REGEX))
