@@ -7,5 +7,8 @@ import java.time.LocalDate;
 @Data
 public class DescriptionModel {
     private String surname;
+    private String fullName;
+    private String shortFullName;
+    private String genetiveFullName;
     private LocalDate reportDate;
 }

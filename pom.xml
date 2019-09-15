@@ -58,6 +58,25 @@
 			<version>1.6</version>
 		</dependency>
 
+		<!-- Jasper Dependency -->
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>6.9.0</version>
+		</dependency>
+
+        <!---->
+        <dependency>
+            <groupId>com.github.aleksandy</groupId>
+            <artifactId>petrovich</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.icu</groupId>
+            <artifactId>icu4j</artifactId>
+            <version>64.2</version>
+        </dependency>
+
 	</dependencies>
 
 	<build>

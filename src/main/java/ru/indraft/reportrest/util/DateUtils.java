@@ -1,0 +1,36 @@
+package ru.indraft.reportrest.util;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
+public class DateUtils {
+
+    private static final String DEFAULT_DATE_TIME_PATTERN = "dd.MM.yyyy";
+    private static final DateTimeFormatter DEFAULT_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_PATTERN);
+
+    public static String getAccountPeriodStr(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL yyyy", new Locale("ru", "RU"));
+        return formatter.format(date);
+    }
+
+    public static String getContractDateStr(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        return formatter.format(date);
+    }
+
+    public static String getContractYearStr(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy");
+        return formatter.format(date);
+    }
+
+    public static String getDateStrForFileName(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM_yyyy");
+        return formatter.format(date);
+    }
+
+    public static String formatDate(LocalDate date) {
+        return date.format(DEFAULT_DATE_TIME_FORMATTER);
+    }
+
+}

@@ -16,7 +16,7 @@ public class LocaleService {
     private ResourceBundle resourceBundle;
 
     private LocaleService() {
-        resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME, new Locale("ru"));
+        resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME, new Locale("ru", "RU"));
     }
 
     public String get(String key) {
