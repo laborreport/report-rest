@@ -35,7 +35,7 @@ public class StringUtils {
         String f = jiraNameArr[0];
         String i = jiraNameArr[1];
         String o = jiraNameArr[2];
-        Petrovich.Names names = new Petrovich.Names(f,i,o, Gender.detect(i));
+        Petrovich.Names names = new Petrovich.Names(f,i,o, Gender.detect(o));
         Petrovich.Names genetiveNames = new Petrovich().inflectTo(names, Case.GENITIVE);
         return genetiveNames.lastName + " " + genetiveNames.firstName + " " + genetiveNames.middleName;
     }
