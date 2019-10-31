@@ -44,7 +44,7 @@ pipeline {
 
         stage(Deploy) {
             steps {
-                build job: 'deploy-service' , parameters: [
+                build job: 'deploy-service-laborreport' , parameters: [
                     string(name: 'service', value: serviceName)
                 ]
             }
