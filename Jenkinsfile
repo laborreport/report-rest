@@ -14,7 +14,7 @@ pipeline {
     }
     environment {
         serviceName = 'laborreport'
-        registryAddress = '192.168.32.4:5000'
+        registryAddress = "${REGISTRY_ADDRESS}"
         nameImage = 'report-rest'
         numberBuild = "${env.BUILD_NUMBER}"
     }
