@@ -48,7 +48,8 @@ pipeline {
                     def remote = [:]
                     remote.name = deployServerHostname
                     remote.allowAnyHosts = true
-                    withCredentials([usernamePassword(credentialsId: deployServerCredential, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    node {
+                        withCredentials([usernamePassword(credentialsId: deployServerCredential, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                             remote.user = USERNAME
                             remote.host = deployServerIp
                             remote.password = PASSWORD
@@ -61,6 +62,7 @@ pipeline {
                                 //sshCommand remote: remote, command: "docker rmi -f $registryAddress/$nameImage:latest"
                                 sshCommand remote: remote, command: "docker-compose pull $service && docker-compose up -d $service"
                             }
+                        }
                     }
                 }
             }
