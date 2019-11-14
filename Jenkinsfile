@@ -19,28 +19,28 @@ pipeline {
         numberBuild = "${env.BUILD_NUMBER}"
     }
     
-    stages {
-        stage('Build and push images') {
-            steps {
-                script {
-                    docker.withRegistry("https://$registryAddress") {
-                        def customImage = docker.build(nameImage, "-f ./docker/Dockerfile .")
-                        customImage.push(numberBuild)
-                        customImage.push("latest")
-                    }
+   // stages {
+       // stage('Build and push images') {
+         //   steps {
+           //     script {
+             //       docker.withRegistry("https://$registryAddress") {
+               //         def customImage = docker.build(nameImage, "-f ./docker/Dockerfile .")
+                 //       customImage.push(numberBuild)
+                   //     customImage.push("latest")
+                  //  }
                         
-                }
-            }
-        }
+               // }
+           // }
+        //}
 
-        stage('Remove docker images') {
-            steps {
-                sh "docker rmi -f $registryAddress/$nameImage:$numberBuild"
-                sh "docker rmi -f $registryAddress/$nameImage:latest"
-                sh "docker rmi -f $nameImage:$numberBuild"
-                sh "docker rmi -f $nameImage:latest"
-            }
-        }
+       // stage('Remove docker images') {
+         //   steps {
+           //     sh "docker rmi -f $registryAddress/$nameImage:$numberBuild"
+             //   sh "docker rmi -f $registryAddress/$nameImage:latest"
+               // sh "docker rmi -f $nameImage:$numberBuild"
+               // sh "docker rmi -f $nameImage:latest"
+           // }
+       // }
 
         stage(Deploy) {
             steps {
@@ -53,7 +53,7 @@ pipeline {
                             remote.host = deployServerIp
                             remote.password = PASSWORD
                             withCredentials([file(credentialsId: 'dcrr', variable: 'DC_FILE')]) {
-                                sh "cp ${DC_FILE} docker-compose.yml"
+                                sh "sudo cp ${DC_FILE} docker-compose.yml"
                             }
                             stage("Deploy docker container"){
                                 //sshCommand remote: remote, command: "docker-compose rm -f -s -v $service"
