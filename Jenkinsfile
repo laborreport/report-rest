@@ -53,8 +53,8 @@ pipeline {
                             remote.host = deployServerIp
                             remote.password = PASSWORD
                             withCredentials([file(credentialsId: 'dcrr', variable: 'DC_FILE')]) {
-                                sshPut remote: remote, from: "${DC_FILE} , into '.'
-                                //sh "cp ${DC_FILE} docker-compose.yml"
+                                sshPut remote: remote, from: "${DC_FILE}" , into '.'
+                                // sh "cp ${DC_FILE} docker-compose.yml"
                             }
                             stage("Deploy docker container"){
                                 //sshCommand remote: remote, command: "docker-compose rm -f -s -v $service"
