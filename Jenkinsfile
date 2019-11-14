@@ -42,7 +42,7 @@ pipeline {
            // }
        // }
 
-        stage(Deploy) {
+        stage('Deploy') {
             steps {
                 script {
                     def remote = [:]
@@ -53,14 +53,10 @@ pipeline {
                             remote.user = USERNAME
                             remote.host = deployServerIp
                             remote.password = PASSWORD
-                            //withCredentials([file(credentialsId: 'dcrr', variable: 'DC_FILE')]) {
-                            //    sshPut remote: remote, from: "${DC_FILE}" , into '.'
-                                // sh "cp ${DC_FILE} docker-compose.yml"
-                            //}
-                            stage("Deploy docker container"){
+                            stage('Deploy docker container') {
                                 //sshCommand remote: remote, command: "docker-compose rm -f -s -v $service"
-                                //sshCommand remote: remote, command: "docker rmi -f $registryAddress/$nameImage:latest"
-                                sshCommand remote: remote, command: "docker-compose pull $service && docker-compose up -d $service"
+                                //sshCommand remote: remote, command: "docker rmi -f $registryAddress/$nameImage"
+                                sshCommand remote: remote, command: "docker-compose up -d"
                             }
                         }
                     }
