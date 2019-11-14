@@ -1,6 +1,7 @@
 #!groovy
 
 pipeline {
+properties([disableConcurrentBuilds()])
 
     agent { 
         label 'master'
@@ -12,6 +13,9 @@ pipeline {
     }
     environment {
         serviceName = 'laborreport'
+        deployServerIp = "${DEPLOY_SERVER_IP}"
+        deployServerHostname = "${DEPLOY_SERVER_HOSTNAME}"
+        deployServerCredential = "${DEPLOY_SERVER_CREDENTIAL}"
         registryAddress = "${REGISTRY_ADDRESS}"
         nameImage = 'report-rest'
         numberBuild = "${env.BUILD_NUMBER}"
@@ -42,9 +46,24 @@ pipeline {
 
         stage(Deploy) {
             steps {
-                build job: 'deploy-service-laborreport' , parameters: [
-                    string(name: 'service', value: serviceName)
-                ]
+                script {
+                    def remote = [:]
+                    remote.name = deployServerHostname
+                    remote.allowAnyHosts = true
+                    withCredentials([usernamePassword(credentialsId: deployServerCredential, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                            remote.user = USERNAME
+                            remote.host = deployServerIp
+                            remote.password = PASSWORD
+                            withCredentials([file(credentialsId: 'dcrr', variable: 'DC_FILE')]) {
+                                sh "cp ${DC_FILE} ./docker-compose.yml"
+                            }
+                            stage("Deploy docker container"){
+                                sshCommand remote: remote, command: "docker-compose rm -f -s -v $service"
+                                sshCommand remote: remote, command: "docker rmi -f $registryAddress/$nameImage:latest"
+                                sshCommand remote: remote, command: "docker-compose pull $service && docker-compose up -d $service"
+                            }
+                    }
+                }
             }
         }
     }
