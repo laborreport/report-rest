@@ -53,6 +53,7 @@ pipeline {
                             remote.host = deployServerIp
                             remote.password = PASSWORD
                             withCredentials([file(credentialsId: 'dcrr', variable: 'DC_FILE')]) {
+                                sh "hostname"
                                 sh "pwd"
                                 sh "cp ${DC_FILE} docker-compose.yml"
                             }
