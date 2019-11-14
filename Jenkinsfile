@@ -58,8 +58,8 @@ properties([disableConcurrentBuilds()])
                                 sh "cp ${DC_FILE} ./docker-compose.yml"
                             }
                             stage("Deploy docker container"){
-                                sshCommand remote: remote, command: "docker-compose rm -f -s -v $service"
-                                sshCommand remote: remote, command: "docker rmi -f $registryAddress/$nameImage:latest"
+                                //sshCommand remote: remote, command: "docker-compose rm -f -s -v $service"
+                                //sshCommand remote: remote, command: "docker rmi -f $registryAddress/$nameImage:latest"
                                 sshCommand remote: remote, command: "docker-compose pull $service && docker-compose up -d $service"
                             }
                     }
