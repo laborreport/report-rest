@@ -1,8 +1,6 @@
 #!groovy
-
-pipeline {
 properties([disableConcurrentBuilds()])
-
+pipeline {
     agent { 
         label 'master'
     }
