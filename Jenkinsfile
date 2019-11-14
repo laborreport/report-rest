@@ -19,7 +19,7 @@ pipeline {
         numberBuild = "${env.BUILD_NUMBER}"
     }
     
-   // stages {
+    stages {
        // stage('Build and push images') {
          //   steps {
            //     script {
