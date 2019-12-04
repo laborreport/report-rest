@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 public class StringUtils {
 
-    private final static String SPACE_REGEX = "\\s+";
+    public final static String SPACE_REGEX = "\\s+";
     private final static String EMPTY_STRING = "";
     private final static DecimalFormat doubleFormat = new DecimalFormat("0.##");
 
@@ -35,7 +35,7 @@ public class StringUtils {
         String f = jiraNameArr[0];
         String i = jiraNameArr[1];
         String o = jiraNameArr[2];
-        Petrovich.Names names = new Petrovich.Names(f,i,o, Gender.detect(o));
+        Petrovich.Names names = new Petrovich.Names(f, i, o, Gender.detect(o));
         Petrovich.Names genetiveNames = new Petrovich().inflectTo(names, Case.GENITIVE);
         return genetiveNames.lastName + " " + genetiveNames.firstName + " " + genetiveNames.middleName;
     }
