@@ -32,7 +32,7 @@ public class ActReportController {
     @Autowired
     private ActReportService reportService;
 
-    private ResponseEntity createActReport(
+    private ResponseEntity<InputStreamResource> createActReport(
             MultipartFile file,
             UserModel user,
             String actNumber,

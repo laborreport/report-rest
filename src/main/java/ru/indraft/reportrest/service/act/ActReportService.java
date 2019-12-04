@@ -1,15 +1,10 @@
 package ru.indraft.reportrest.service.act;
 
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -31,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Service
 public class ActReportService {
@@ -49,6 +45,30 @@ public class ActReportService {
         return JasperCompileManager.compileReport(jasperDesign);
     }
 
+    private boolean isNewPeVersion(String peNumber) {
+        String newVersionPeNumberPattern = "\\d{15}";
+        return Pattern.matches(newVersionPeNumberPattern, peNumber);
+    }
+
+    private ImmutablePair<String, String> getPeSeriesAndNumber(String peNumber) {
+        String[] arr = peNumber.split(StringUtils.SPACE_REGEX);
+        return new ImmutablePair<>(arr[0], arr[1]);
+    }
+
+    private void setPeParams(Map<String, Object> parameters, UserModel userModel) {
+        var isNewPeVersion = isNewPeVersion(userModel.getPeNumber());
+        parameters.put(ReportParams.IS_NEW_PE_VERSION, isNewPeVersion);
+        parameters.put(ReportParams.PE_DATE, DateUtils.getContractDateStr(userModel.getPeDate()));
+        if (isNewPeVersion) {
+            parameters.put(ReportParams.PE_SERIES, null);
+            parameters.put(ReportParams.PE_NUMBER, userModel.getPeNumber());
+        } else {
+            ImmutablePair<String, String> pair = getPeSeriesAndNumber(userModel.getPeNumber());
+            parameters.put(ReportParams.PE_SERIES, pair.getLeft());
+            parameters.put(ReportParams.PE_NUMBER, pair.getRight());
+        }
+    }
+
     private Map<String, Object> generateParams(UserModel userModel, DescriptionModel descriptionModel, String actNumber, Double totalCost) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(JRParameter.REPORT_LOCALE, new Locale("ru", "RU"));
@@ -64,8 +84,8 @@ public class ActReportService {
         parameters.put(ReportParams.CONTRACT_NUMBER, userModel.getContractNumber());
         parameters.put(ReportParams.CONTRACT_DATE, DateUtils.getContractDateStr(userModel.getContractDate()));
         parameters.put(ReportParams.CONTRACT_YEAR, DateUtils.getContractYearStr(userModel.getContractDate()));
-        parameters.put(ReportParams.PE_SERIES, userModel.getPeSeries());
-        parameters.put(ReportParams.PE_NUMBER, userModel.getPeNumber());
+
+        setPeParams(parameters, userModel);
 
         return parameters;
     }
