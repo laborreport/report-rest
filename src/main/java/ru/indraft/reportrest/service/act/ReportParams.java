@@ -41,9 +41,19 @@ public final class ReportParams {
     public static final String PE_SERIES = "PE_SERIES";
 
     /**
-     * Номер ИП
+     * Номер ИП с серией
      */
     public static final String PE_NUMBER = "PE_NUMBER";
+
+    /**
+     * Флаг, что новая версия документа о создании ИП без серии и с датой.
+     */
+    public static final String IS_NEW_PE_VERSION = "IS_NEW_PE_VERSION";
+
+    /**
+     * Дата создания ИП
+     */
+    public static final String PE_DATE = "PE_DATE";
 
     /**
      * Отчетный период отчета

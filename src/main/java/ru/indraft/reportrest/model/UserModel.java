@@ -14,11 +14,11 @@ public class UserModel {
     @JsonProperty("contract_date")
     private LocalDate contractDate;
 
-    @JsonProperty("pe_series")
-    private String peSeries;
-
     @JsonProperty("pe_number")
     private String peNumber;
+
+    @JsonProperty("pe_date")
+    private LocalDate peDate;
 
     @JsonProperty("rate")
     private Double rate;
