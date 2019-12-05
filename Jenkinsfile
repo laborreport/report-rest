@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([file(credentialsId: 'jrxml_file', variable: 'JRXML_FILE')]){
-                        sh "cp ${JRXML_FILE} src/main/resources/template/akt.jrxml"
+                        sh "cp ${JRXML_FILE} ./src/main/resources/template/akt.jrxml"
                     }
                     docker.withRegistry("https://$registryAddress") {
                         def customImage = docker.build(nameImage, "-f ./docker/Dockerfile .")
