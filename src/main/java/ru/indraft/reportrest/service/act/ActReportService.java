@@ -78,7 +78,7 @@ public class ActReportService {
         parameters.put(ReportParams.TOTAL_COST_IN_WORDS, StringUtils.getAmountInWords(totalCost));
 
         parameters.put(ReportParams.ACCOUNT_PERIOD, DateUtils.getAccountPeriodStr(descriptionModel.getReportDate()));
-        parameters.put(ReportParams.GENETIVE_FULL_NAME, descriptionModel.getGenetiveFullName());
+        parameters.put(ReportParams.GENETIVE_FULL_NAME, descriptionModel.getFullName());
         parameters.put(ReportParams.SHORT_FULL_NAME, descriptionModel.getShortFullName());
 
         parameters.put(ReportParams.CONTRACT_NUMBER, userModel.getContractNumber());
