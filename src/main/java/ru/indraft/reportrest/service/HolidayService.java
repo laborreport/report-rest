@@ -47,7 +47,7 @@ class HolidayService {
     private List<Integer> getHolidays(LocalDate date) {
         String holidaysStr = getHolidaysOfMonthAndYear(date);
         String[] holidaysArr = holidaysStr.split(",");
-        return Arrays.stream(holidaysArr).filter(item -> !item.endsWith("*")).map(Integer::valueOf).collect(Collectors.toList());
+        return Arrays.stream(holidaysArr).filter(item -> !item.endsWith("*") && !item.endsWith("+")).map(Integer::valueOf).collect(Collectors.toList());
     }
 
     private String getHolidaysOfMonthAndYear(LocalDate date) {
