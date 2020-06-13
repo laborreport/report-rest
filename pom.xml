@@ -65,12 +65,7 @@
 			<version>6.9.0</version>
 		</dependency>
 
-        <!---->
-        <dependency>
-            <groupId>com.github.aleksandy</groupId>
-            <artifactId>petrovich</artifactId>
-            <version>1.2.1</version>
-        </dependency>
+        <!-- Amount in words in Russian -->
         <dependency>
             <groupId>com.ibm.icu</groupId>
             <artifactId>icu4j</artifactId>

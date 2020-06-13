@@ -64,7 +64,6 @@ public class TaskService {
         descriptionModel.setSurname(StringUtils.getSurname(jiraUserName));
         descriptionModel.setFullName(StringUtils.getFullName(jiraUserName));
         descriptionModel.setShortFullName(StringUtils.getShortFullName(jiraUserName));
-        descriptionModel.setGenetiveFullName(StringUtils.getGenetiveFullName(jiraUserName));
         descriptionModel.setReportDate(getLocalDate(firstRow.getCell(CellNum.TASK_DATE).getDateCellValue()));
         return descriptionModel;
     }
