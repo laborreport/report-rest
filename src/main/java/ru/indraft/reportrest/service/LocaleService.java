@@ -8,22 +8,21 @@ public class LocaleService {
     private static final String BUNDLE_NAME = "bundle.locale";
 
     private static final LocaleService instance = new LocaleService();
+    private ResourceBundle resourceBundle;
+
+    private LocaleService() {
+        resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME, getDefaultLocale());
+    }
 
     public static LocaleService getInstance() {
         return instance;
     }
 
-    private ResourceBundle resourceBundle;
-
-    private LocaleService() {
-        resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME, new Locale("ru", "RU"));
+    public static Locale getDefaultLocale() {
+        return Locale.forLanguageTag("ru");
     }
 
     public String get(String key) {
         return resourceBundle.getString(key);
-    }
-
-    public ResourceBundle getResourceBundle() {
-        return resourceBundle;
     }
 }

@@ -1,8 +1,9 @@
 package ru.indraft.reportrest.util;
 
+import ru.indraft.reportrest.service.LocaleService;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 public class DateUtils {
 
@@ -10,7 +11,7 @@ public class DateUtils {
     private static final DateTimeFormatter DEFAULT_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_PATTERN);
 
     public static String getAccountPeriodStr(LocalDate date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL yyyy", new Locale("ru", "RU"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("LLLL yyyy", LocaleService.getDefaultLocale());
         return formatter.format(date);
     }
 

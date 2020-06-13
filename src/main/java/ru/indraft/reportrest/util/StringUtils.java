@@ -1,9 +1,9 @@
 package ru.indraft.reportrest.util;
 
 import com.ibm.icu.text.RuleBasedNumberFormat;
+import ru.indraft.reportrest.service.LocaleService;
 
 import java.text.DecimalFormat;
-import java.util.Locale;
 import java.util.stream.Stream;
 
 public class StringUtils {
@@ -32,7 +32,7 @@ public class StringUtils {
     }
 
     public static String getAmountInWords(Double value) {
-        RuleBasedNumberFormat nf = new RuleBasedNumberFormat(Locale.forLanguageTag("ru"),
+        RuleBasedNumberFormat nf = new RuleBasedNumberFormat(LocaleService.getDefaultLocale(),
                 RuleBasedNumberFormat.SPELLOUT);
         return nf.format(value);
     }

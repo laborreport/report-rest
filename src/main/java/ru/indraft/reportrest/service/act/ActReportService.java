@@ -1,6 +1,12 @@
 package ru.indraft.reportrest.service.act;
 
-import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
@@ -14,6 +20,7 @@ import ru.indraft.reportrest.model.DescriptionModel;
 import ru.indraft.reportrest.model.ReportTaskModel;
 import ru.indraft.reportrest.model.TaskModel;
 import ru.indraft.reportrest.model.UserModel;
+import ru.indraft.reportrest.service.LocaleService;
 import ru.indraft.reportrest.service.TaskService;
 import ru.indraft.reportrest.util.DateUtils;
 import ru.indraft.reportrest.util.StringUtils;
@@ -24,7 +31,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -71,7 +77,7 @@ public class ActReportService {
 
     private Map<String, Object> generateParams(UserModel userModel, DescriptionModel descriptionModel, String actNumber, Double totalCost) {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(JRParameter.REPORT_LOCALE, new Locale("ru", "RU"));
+        parameters.put(JRParameter.REPORT_LOCALE, LocaleService.getDefaultLocale());
 
         parameters.put(ReportParams.ACT_NUMBER, actNumber);
         parameters.put(ReportParams.TOTAL_COST, StringUtils.format(totalCost));
