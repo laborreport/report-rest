@@ -65,7 +65,7 @@ public class LaborReportService {
 
     private LocaleService lres = LocaleService.getInstance();
     private CellStyleService cellStyleService;
-//    private XSSFWorkbook workbook;
+    private XSSFWorkbook workbook;
 
     public ByteArrayInputStream generateReport(List<TaskModel> taskModels) throws IOException {
         XSSFWorkbook resultWorkbook = null;
@@ -82,7 +82,7 @@ public class LaborReportService {
     }
 
     private XSSFWorkbook generate(List<TaskModel> taskModels) {
-        XSSFWorkbook workbook = new XSSFWorkbook();
+        workbook = new XSSFWorkbook();
         cellStyleService = new CellStyleService(workbook);
 
         XSSFSheet sheet = workbook.createSheet();
@@ -111,7 +111,6 @@ public class LaborReportService {
     }
 
     private void writeFooterRow(XSSFSheet sheet, int lastRowIndex) {
-        XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFRow row = sheet.createRow(lastRowIndex);
         row.setHeight(Height.FOOTER_ROW);
         XSSFCell totalCell = row.createCell(ColumnNum.TOTAL, CellType.STRING);
