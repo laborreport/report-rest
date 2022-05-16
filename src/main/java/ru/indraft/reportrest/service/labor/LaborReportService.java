@@ -64,14 +64,12 @@ public class LaborReportService {
     }
 
     private LocaleService lres = LocaleService.getInstance();
-    private CellStyleService cellStyleService;
-    private XSSFWorkbook workbook;
 
     public ByteArrayInputStream generateReport(List<TaskModel> taskModels) throws IOException {
         XSSFWorkbook resultWorkbook = null;
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            resultWorkbook  = generate(taskModels);
+            resultWorkbook = generate(taskModels);
             resultWorkbook.write(out);
             return new ByteArrayInputStream(out.toByteArray());
         } finally {
@@ -82,15 +80,15 @@ public class LaborReportService {
     }
 
     private XSSFWorkbook generate(List<TaskModel> taskModels) {
-        workbook = new XSSFWorkbook();
-        cellStyleService = new CellStyleService(workbook);
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        CellStyleService cellStyleService = new CellStyleService(workbook);
 
         XSSFSheet sheet = workbook.createSheet();
         sheet.createFreezePane(0, 1);
         setColumnWidths(sheet);
-        writeTitleRow(sheet);
-        writeTaskRows(sheet, taskModels);
-        writeFooterRow(sheet, taskModels.size() + START_ROW_INDEX);
+        writeTitleRow(sheet, cellStyleService);
+        writeTaskRows(sheet, taskModels, cellStyleService);
+        writeFooterRow(sheet, taskModels.size() + START_ROW_INDEX, workbook, cellStyleService);
 
         return workbook;
     }
@@ -110,7 +108,7 @@ public class LaborReportService {
         return messageFormat.format(new String[]{firstRowAddress, lastRowAddress});
     }
 
-    private void writeFooterRow(XSSFSheet sheet, int lastRowIndex) {
+    private void writeFooterRow(XSSFSheet sheet, int lastRowIndex, XSSFWorkbook workbook, CellStyleService cellStyleService) {
         XSSFRow row = sheet.createRow(lastRowIndex);
         row.setHeight(Height.FOOTER_ROW);
         XSSFCell totalCell = row.createCell(ColumnNum.TOTAL, CellType.STRING);
@@ -129,15 +127,15 @@ public class LaborReportService {
         formulaEvaluator.evaluateAll();
     }
 
-    private void writeTaskRows(XSSFSheet sheet, List<TaskModel> taskModels) {
+    private void writeTaskRows(XSSFSheet sheet, List<TaskModel> taskModels, CellStyleService cellStyleService) {
         int rowNum = START_ROW_INDEX;
         for (TaskModel taskModel : taskModels) {
-            writeTaskRow(sheet, rowNum, taskModel);
+            writeTaskRow(sheet, rowNum, taskModel, cellStyleService);
             rowNum++;
         }
     }
 
-    private void writeTaskRow(XSSFSheet sheet, int rowNum, TaskModel taskModel) {
+    private void writeTaskRow(XSSFSheet sheet, int rowNum, TaskModel taskModel, CellStyleService cellStyleService) {
         XSSFRow row = sheet.createRow(rowNum);
         row.setHeight(Height.TASK_ROW);
 
@@ -160,13 +158,13 @@ public class LaborReportService {
         projectNameCell.setCellValue(taskModel.getProjectName());
 
         XSSFCell workTimeCell = row.createCell(ColumnNum.WORK_TIME, CellType.NUMERIC);
-        writeTimeCell(workTimeCell, taskModel.getWorkTime());
+        writeTimeCell(workTimeCell, taskModel.getWorkTime(), cellStyleService);
 
         XSSFCell overTimeCell = row.createCell(ColumnNum.OVER_TIME, CellType.NUMERIC);
-        writeTimeCell(overTimeCell, taskModel.getOverTime());
+        writeTimeCell(overTimeCell, taskModel.getOverTime(), cellStyleService);
     }
 
-    private void writeTimeCell(XSSFCell timeCell, Double workTime) {
+    private void writeTimeCell(XSSFCell timeCell, Double workTime, CellStyleService cellStyleService) {
         var time = workTime != null ? workTime : 0;
         boolean noDecimalPart = time % 1 == 0;
         timeCell.setCellValue(time);
@@ -185,17 +183,17 @@ public class LaborReportService {
         sheet.setColumnWidth(ColumnNum.OVER_TIME, ColumnWidth.OVER_TIME * COLUMN_WIDTH_FACTOR);
     }
 
-    private void writeTitleRow(XSSFSheet sheet) {
+    private void writeTitleRow(XSSFSheet sheet, CellStyleService cellStyleService) {
         XSSFRow row = sheet.createRow(TITLE_ROW_INDEX);
         row.setHeight(Height.TITLE_ROW);
-        writeTitleCell(row, ColumnNum.TASK_NAME, TitleNameKey.TASK_NAME);
-        writeTitleCell(row, ColumnNum.TASK_TERM, TitleNameKey.TASK_TERM);
-        writeTitleCell(row, ColumnNum.PROJECT_NAME, TitleNameKey.PROJECT_NAME);
-        writeTitleCell(row, ColumnNum.WORK_TIME, TitleNameKey.WORK_TIME);
-        writeTitleCell(row, ColumnNum.OVER_TIME, TitleNameKey.OVER_TIME);
+        writeTitleCell(row, ColumnNum.TASK_NAME, TitleNameKey.TASK_NAME, cellStyleService);
+        writeTitleCell(row, ColumnNum.TASK_TERM, TitleNameKey.TASK_TERM, cellStyleService);
+        writeTitleCell(row, ColumnNum.PROJECT_NAME, TitleNameKey.PROJECT_NAME, cellStyleService);
+        writeTitleCell(row, ColumnNum.WORK_TIME, TitleNameKey.WORK_TIME, cellStyleService);
+        writeTitleCell(row, ColumnNum.OVER_TIME, TitleNameKey.OVER_TIME, cellStyleService);
     }
 
-    private void writeTitleCell(XSSFRow row, int columnIndex, String nameKey) {
+    private void writeTitleCell(XSSFRow row, int columnIndex, String nameKey, CellStyleService cellStyleService) {
         XSSFCell cell = row.createCell(columnIndex, CellType.STRING);
         cell.setCellStyle(cellStyleService.getTitleCellStyle());
         cell.setCellValue(lres.get(nameKey));
