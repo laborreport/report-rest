@@ -69,7 +69,7 @@ public class LaborReportService {
         XSSFWorkbook resultWorkbook = null;
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            resultWorkbook  = generate(taskModels);
+            resultWorkbook = generate(taskModels);
             resultWorkbook.write(out);
             return new ByteArrayInputStream(out.toByteArray());
         } finally {
